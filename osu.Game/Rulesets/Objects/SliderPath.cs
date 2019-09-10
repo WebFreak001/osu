@@ -27,6 +27,11 @@ namespace osu.Game.Rulesets.Objects
         [JsonProperty]
         private Vector2[] controlPoints;
 
+        [JsonProperty]
+        private Vector2[] interpolation;
+
+        private double[] barycentricWeights;
+
         private List<Vector2> calculatedPath;
         private List<double> cumulativeLength;
 
@@ -41,10 +46,11 @@ namespace osu.Game.Rulesets.Objects
         /// <paramref name="controlPoints"/>. The path will be shortened/lengthened to match this length.
         /// If null, the path will use the true distance between all <paramref name="controlPoints"/>.</param>
         [JsonConstructor]
-        public SliderPath(PathType type, Vector2[] controlPoints, double? expectedDistance = null)
+        public SliderPath(PathType type, Vector2[] controlPoints, double? expectedDistance = null, Vector2[] interpolation = null)
         {
             this = default;
             this.controlPoints = controlPoints;
+            this.interpolation = interpolation ?? new[] { Vector2.Zero, new Vector2(0.5f, 0.125f), new Vector2(0.75f, 0.4f), Vector2.One };
 
             Type = type;
             ExpectedDistance = expectedDistance;
@@ -62,6 +68,19 @@ namespace osu.Game.Rulesets.Objects
             {
                 ensureInitialised();
                 return controlPoints.AsSpan();
+            }
+        }
+
+        /// <summary>
+        /// The polynomial interpolation points for this slider.
+        /// </summary>
+        [JsonIgnore]
+        public ReadOnlySpan<Vector2> InterpolationPoints
+        {
+            get
+            {
+                ensureInitialised();
+                return interpolation.AsSpan();
             }
         }
 
@@ -191,6 +210,9 @@ namespace osu.Game.Rulesets.Objects
                     start = end;
                 }
             }
+
+            if (interpolation != null)
+                barycentricWeights = Interpolation.BarycentricWeights(interpolation);
         }
 
         private void calculateCumulativeLength()
@@ -242,9 +264,17 @@ namespace osu.Game.Rulesets.Objects
             return i;
         }
 
+        private double mapTime(double t)
+        {
+            if (interpolation == null)
+                return t;
+            else
+                return Interpolation.BarycentricLagrange(interpolation, barycentricWeights, t);
+        }
+
         private double progressToDistance(double progress)
         {
-            return MathHelper.Clamp(progress, 0, 1) * Distance;
+            return MathHelper.Clamp(mapTime(progress), 0, 1) * Distance;
         }
 
         private Vector2 interpolateVertices(int i, double d)

@@ -96,7 +96,7 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders.Components
             if (isSegmentSeparatorWithPrevious)
                 newControlPoints[index - 1] = newControlPoints[index];
 
-            slider.Path = new SliderPath(slider.Path.Type, newControlPoints);
+            slider.Path = new SliderPath(slider.Path.Type, newControlPoints, slider.Path.ExpectedDistance, slider.Path.InterpolationPoints.ToArray());
 
             return true;
         }

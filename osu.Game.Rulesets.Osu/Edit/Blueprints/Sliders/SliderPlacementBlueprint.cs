@@ -129,7 +129,7 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders
         private void updateSlider()
         {
             var newControlPoints = segments.SelectMany(s => s.ControlPoints).Concat(cursor.Yield()).ToArray();
-            HitObject.Path = new SliderPath(newControlPoints.Length > 2 ? PathType.Bezier : PathType.Linear, newControlPoints);
+            HitObject.Path = new SliderPath(newControlPoints.Length > 2 ? PathType.Bezier : PathType.Linear, newControlPoints, HitObject.Path.ExpectedDistance, HitObject.Path.InterpolationPoints.ToArray());
         }
 
         private void setState(PlacementState newState)

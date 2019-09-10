@@ -41,6 +41,10 @@ namespace osu.Game.Rulesets.Edit
 
         private InputManager inputManager;
 
+        protected ObjectPropertiesGroup ObjectProperties { get; private set; }
+
+        protected IEnumerable<SelectionBlueprint> Selection => blueprintContainer.Selections.Where(item => item.IsSelected);
+
         internal HitObjectComposer(Ruleset ruleset)
         {
             Ruleset = ruleset;
@@ -70,6 +74,8 @@ namespace osu.Game.Rulesets.Edit
             var layerAboveRuleset = DrawableRuleset.CreatePlayfieldAdjustmentContainer();
             layerAboveRuleset.Child = blueprintContainer = new BlueprintContainer();
 
+            blueprintContainer.SelectionChanged += SelectionChanged;
+
             layerContainers.Add(layerBelowRuleset);
             layerContainers.Add(layerAboveRuleset);
 
@@ -88,7 +94,8 @@ namespace osu.Game.Rulesets.Edit
                             Padding = new MarginPadding { Right = 10 },
                             Children = new Drawable[]
                             {
-                                new ToolboxGroup { Child = toolboxCollection = new RadioButtonCollection { RelativeSizeAxes = Axes.X } }
+                                new ToolboxGroup { Child = toolboxCollection = new RadioButtonCollection { RelativeSizeAxes = Axes.X } },
+                                ObjectProperties = new ObjectPropertiesGroup()
                             }
                         },
                         new Container
@@ -116,6 +123,8 @@ namespace osu.Game.Rulesets.Edit
                                 .ToList();
 
             toolboxCollection.Items[0].Select();
+
+            FillObjectProperties();
         }
 
         protected override void LoadComplete()
@@ -175,6 +184,9 @@ namespace osu.Game.Rulesets.Edit
         /// Creates a <see cref="SelectionHandler"/> which outlines <see cref="DrawableHitObject"/>s and handles movement of selections.
         /// </summary>
         public virtual SelectionHandler CreateSelectionHandler() => new SelectionHandler();
+
+        protected virtual void FillObjectProperties() { }
+        protected virtual void SelectionChanged() { }
     }
 
     public abstract class HitObjectComposer<TObject> : HitObjectComposer
