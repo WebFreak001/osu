@@ -31,18 +31,13 @@ namespace osu.Game.Screens.Select.Carousel
 
         private bool checkMatch(FilterCriteria criteria)
         {
-            bool match =
-                criteria.Ruleset == null ||
-                BeatmapInfo.Ruleset.ShortName == criteria.Ruleset.ShortName ||
-                (BeatmapInfo.Ruleset.OnlineID == 0 && criteria.Ruleset.OnlineID != 0 && criteria.AllowConvertedBeatmaps);
-
             if (BeatmapInfo.BeatmapSet?.Equals(criteria.SelectedBeatmapSet) == true)
             {
-                // only check ruleset equality or convertability for selected beatmap
-                return match;
+                // only check convertability for selected beatmap
+                return true;
             }
 
-            if (!match) return false;
+            bool match = true;
 
             if (criteria.SearchTerms.Length > 0)
             {

@@ -21,7 +21,22 @@ namespace osu.Game.Rulesets.Mania
 
         public bool Matches(BeatmapInfo beatmapInfo, FilterCriteria criteria)
         {
-            return !keys.HasFilter || keys.IsInRange(ManiaBeatmapConverter.GetColumnCount(LegacyBeatmapConversionDifficultyInfo.FromBeatmapInfo(beatmapInfo), criteria.Mods));
+            // taiko maps currently don't yet convert very well to mania
+            if (!criteria.AllowConvertedBeatmaps || beatmapInfo.Ruleset.ShortName == "taiko")
+                return false;
+            return (beatmapInfo.Ruleset.ShortName == "mania"
+                    || (criteria.AllowConvertedBeatmaps && (
+                        beatmapInfo.Ruleset.ShortName == "osu" ||
+                        beatmapInfo.Ruleset.ShortName == "fruits"))
+                ) && (!keys.HasFilter
+                    || keys.IsInRange(
+                        ManiaBeatmapConverter.GetColumnCount(
+                            LegacyBeatmapConversionDifficultyInfo.FromBeatmapInfo(
+                                beatmapInfo
+                            ), criteria.Mods
+                        )
+                    )
+                );
         }
 
         public bool TryParseCustomKeywordCriteria(string key, Operator op, string value)

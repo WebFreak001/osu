@@ -17,6 +17,7 @@ using osu.Game.Overlays.Settings;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
+using osu.Game.Rulesets.Filter;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Beatmaps;
 using osu.Game.Rulesets.Osu.Configuration;
@@ -55,6 +56,8 @@ namespace osu.Game.Rulesets.Osu
         public override IBeatmapConverter CreateBeatmapConverter(IBeatmap beatmap) => new OsuBeatmapConverter(beatmap, this);
 
         public override IBeatmapProcessor CreateBeatmapProcessor(IBeatmap beatmap) => new OsuBeatmapProcessor(beatmap);
+
+        public override IRulesetFilterCriteria CreateRulesetFilterCriteria() => new OsuFilterCriteria();
 
         public const string SHORT_NAME = "osu";
 

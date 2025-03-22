@@ -24,6 +24,7 @@ using osu.Game.Rulesets.Catch.Skinning.Legacy;
 using osu.Game.Rulesets.Catch.UI;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
+using osu.Game.Rulesets.Filter;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Replays.Types;
 using osu.Game.Rulesets.Scoring;
@@ -48,6 +49,8 @@ namespace osu.Game.Rulesets.Catch
         public override IBeatmapConverter CreateBeatmapConverter(IBeatmap beatmap) => new CatchBeatmapConverter(beatmap, this);
 
         public override IBeatmapProcessor CreateBeatmapProcessor(IBeatmap beatmap) => new CatchBeatmapProcessor(beatmap);
+
+        public override IRulesetFilterCriteria CreateRulesetFilterCriteria() => new CatchFilterCriteria();
 
         public const string SHORT_NAME = "fruits";
 

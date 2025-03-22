@@ -37,6 +37,7 @@ using osu.Game.Rulesets.Scoring.Legacy;
 using osu.Game.Rulesets.Taiko.Configuration;
 using osu.Game.Rulesets.Taiko.Edit.Setup;
 using osu.Game.Screens.Edit.Setup;
+using osu.Game.Rulesets.Filter;
 
 namespace osu.Game.Rulesets.Taiko
 {
@@ -63,6 +64,8 @@ namespace osu.Game.Rulesets.Taiko
 
             return null;
         }
+
+        public override IRulesetFilterCriteria CreateRulesetFilterCriteria() => new TaikoFilterCriteria();
 
         public const string SHORT_NAME = "taiko";
 
