@@ -109,6 +109,59 @@ namespace osu.Game.Tests.NonVisual.Filtering
         [Test]
         [TestCase(true)]
         [TestCase(false)]
+        public void TestCriteriaMatchingCustomConvertRules(bool convertsStd)
+        {
+            var exampleBeatmapInfo = getExampleBeatmap();
+            var criteria = new FilterCriteria
+            {
+                Ruleset = new RulesetInfo { OnlineID = -1, ShortName = "custom" },
+                AllowConvertedBeatmaps = true,
+                RulesetConvertSupport = new CustomConvertSupport(["custom"], convertsStd ? ["osu"] : [])
+            };
+            var carouselItem = new CarouselBeatmap(exampleBeatmapInfo);
+            carouselItem.Filter(criteria);
+            Assert.AreEqual(!convertsStd, carouselItem.Filtered.Value);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestCriteriaMatchingCustomNativeConvertRules(bool allowConverts)
+        {
+            var exampleBeatmapInfo = getExampleBeatmap();
+            var criteria = new FilterCriteria
+            {
+                Ruleset = new RulesetInfo { OnlineID = -1, ShortName = "custom" },
+                AllowConvertedBeatmaps = allowConverts,
+                RulesetConvertSupport = new CustomConvertSupport(["custom", "osu"], [])
+            };
+            var carouselItem = new CarouselBeatmap(exampleBeatmapInfo);
+            carouselItem.Filter(criteria);
+            Assert.IsFalse(carouselItem.Filtered.Value);
+        }
+
+        private class CustomConvertSupport : IRulesetConvertSupport
+        {
+            private readonly string[] nativeFormats, convertFormats;
+
+            public CustomConvertSupport(string[] nativeFormats, string[] convertFormats)
+            {
+                this.nativeFormats = nativeFormats;
+                this.convertFormats = convertFormats;
+            }
+
+            public bool CanBePlayed(RulesetInfo ruleset, bool conversionEnabled)
+            {
+                if (conversionEnabled && convertFormats.Contains(ruleset.ShortName))
+                    return true;
+
+                return nativeFormats.Contains(ruleset.ShortName);
+            }
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
         public void TestCriteriaMatchingRangeMin(bool inclusive)
         {
             var exampleBeatmapInfo = getExampleBeatmap();
