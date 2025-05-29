@@ -101,6 +101,12 @@ namespace osu.Game.Online.API
         Task PerformAsync(APIRequest request);
 
         /// <summary>
+        /// Logout from any logged in user and change to a guest user with a custom name.
+        /// </summary>
+        /// <param name="guestName">The display name for the guest user.</param>
+        void SetGuestUser(string guestName);
+
+        /// <summary>
         /// Attempt to login using the provided credentials. This is a non-blocking operation.
         /// </summary>
         /// <param name="username">The user's username.</param>

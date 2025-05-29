@@ -622,6 +622,11 @@ namespace osu.Game
                 Ruleset.Value = ruleset;
         });
 
+        public void SetGuest(string name) => waitForReady(() => beatmapListing, _ =>
+        {
+            API.SetGuestUser(name);
+        });
+
         /// <summary>
         /// Show a wiki's page as an overlay
         /// </summary>

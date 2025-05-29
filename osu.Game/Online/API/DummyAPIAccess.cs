@@ -188,6 +188,12 @@ namespace osu.Game.Online.API
             LocalUser.Value = new GuestUser();
         }
 
+        public void SetGuestUser(string guestName)
+        {
+            state.Value = APIState.Offline;
+            LocalUser.Value = new GuestUser(guestName);
+        }
+
         public void UpdateLocalFriends()
         {
         }
