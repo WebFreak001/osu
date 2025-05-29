@@ -64,7 +64,7 @@ namespace osu.Game.Online.API
 
         public Language Language => game.CurrentLanguage.Value;
 
-        private Bindable<APIUser> localUser { get; } = new Bindable<APIUser>(createGuestUser());
+        private Bindable<APIUser> localUser { get; } = new Bindable<APIUser>(new GuestUser());
 
         private BindableList<APIRelation> friends { get; } = new BindableList<APIRelation>();
         private BindableList<APIRelation> blocks { get; } = new BindableList<APIRelation>();
@@ -601,6 +601,11 @@ namespace osu.Game.Online.API
 
         public void Logout()
         {
+            SetGuestUser(@"Guest");
+        }
+
+        public void SetGuestUser(string guestName)
+        {
             password = null;
             SecondFactorCode = null;
             authentication.Clear();
@@ -611,7 +616,7 @@ namespace osu.Game.Online.API
             // Scheduled prior to state change such that the state changed event is invoked with the correct user and their friends present
             Schedule(() =>
             {
-                localUser.Value = createGuestUser();
+                localUser.Value = new GuestUser(guestName);
                 configSupporter.Value = false;
                 friends.Clear();
             });
@@ -675,8 +680,6 @@ namespace osu.Game.Online.API
             Queue(blocksReq);
         }
 
-        private static APIUser createGuestUser() => new GuestUser();
-
         protected override void Dispose(bool isDisposing)
         {
             base.Dispose(isDisposing);
@@ -696,9 +699,9 @@ namespace osu.Game.Online.API
 
     internal class GuestUser : APIUser
     {
-        public GuestUser()
+        public GuestUser(string name = @"Guest")
         {
-            Username = @"Guest";
+            Username = name;
             Id = SYSTEM_USER_ID;
         }
     }

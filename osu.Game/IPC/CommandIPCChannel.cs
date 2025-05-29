@@ -44,6 +44,10 @@ namespace osu.Game.IPC
                 case @"set-ruleset":
                     game.TrySetRuleset(arguments[0]);
                     break;
+
+                case @"set-guest":
+                    game.SetGuest(arguments[0]);
+                    break;
             }
         }
     }
