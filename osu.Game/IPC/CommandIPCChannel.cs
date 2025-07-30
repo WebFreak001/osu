@@ -48,6 +48,21 @@ namespace osu.Game.IPC
                 case @"set-guest":
                     game.SetGuest(arguments[0]);
                     break;
+
+                case @"set-setting":
+                    Configuration.OsuSetting key = System.Enum.Parse<Configuration.OsuSetting>(arguments[0]);
+                    string value = arguments[1];
+                    if (value == @"true" || value == @"false")
+                        game.SetSetting(key, value == @"true");
+                    else if (int.TryParse(value, out int i))
+                        game.SetSetting(key, i);
+                    else if (double.TryParse(value, out double d))
+                        game.SetSetting(key, d);
+                    else if (value.StartsWith('"') && value.EndsWith('"'))
+                        game.SetSetting(key, Newtonsoft.Json.JsonConvert.DeserializeObject<string>(value));
+                    else
+                        throw new System.ArgumentException(@"Unrecognized value type for set-setting (expected JSON value)");
+                    break;
             }
         }
     }

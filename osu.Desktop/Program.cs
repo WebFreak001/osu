@@ -157,7 +157,8 @@ namespace osu.Desktop
                 return true;
             }
 
-            if (args.Length == 2 && (args[0] == "set-ruleset" || args[0] == "set-guest"))
+            if ((args.Length == 2 && (args[0] == "set-ruleset" || args[0] == "set-guest"))
+             || (args.Length == 3 && args[0] == "set-setting"))
             {
                 var commandHandler = new CommandIPCChannel(host);
                 if (!commandHandler.RunCommand(args[0], args[1..]).Wait(3000))

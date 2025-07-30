@@ -627,6 +627,11 @@ namespace osu.Game
             API.SetGuestUser(name);
         });
 
+        public void SetSetting<T>(OsuSetting setting, T value) => Schedule(() =>
+        {
+            LocalConfig.SetValue(setting, value);
+        });
+
         /// <summary>
         /// Show a wiki's page as an overlay
         /// </summary>
