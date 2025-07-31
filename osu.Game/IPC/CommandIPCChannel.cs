@@ -63,6 +63,10 @@ namespace osu.Game.IPC
                     else
                         throw new System.ArgumentException(@"Unrecognized value type for set-setting (expected JSON value)");
                     break;
+
+                case @"select-beatmap":
+                    game.SelectLocalBeatmap(int.Parse(arguments[0]));
+                    break;
             }
         }
     }

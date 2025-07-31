@@ -632,6 +632,28 @@ namespace osu.Game
             LocalConfig.SetValue(setting, value);
         });
 
+        public IBeatmapInfo? GetLocalBeatmap(int beatmapOnlineId)
+        {
+            var beatmapSet = detachedBeatmapStore.GetBeatmapSets(null).FirstOrDefault(info => info.Beatmaps.Any(b => b.OnlineID == beatmapOnlineId));
+            if (beatmapSet == default)
+                return null;
+
+            return beatmapSet.Beatmaps.First(b => b.OnlineID == beatmapOnlineId);
+        }
+
+        public void SelectLocalBeatmap(int beatmapOnlineId)
+        {
+            var beatmap = GetLocalBeatmap(beatmapOnlineId);
+            if (beatmap != null)
+                Schedule(() => PresentBeatmap(beatmap.BeatmapSet, b => b.OnlineID == beatmapOnlineId));
+            else
+                Schedule(() => Notifications.Post(new SimpleErrorNotification
+                {
+                    Icon = FontAwesome.Solid.ExclamationTriangle,
+                    Text = NotificationsStrings.BeatmapNotAvailable
+                }));
+        }
+
         /// <summary>
         /// Show a wiki's page as an overlay
         /// </summary>

@@ -135,6 +135,11 @@ Click to see what's new!", version);
         /// </summary>
         public static LocalisableString Mention => new TranslatableString(getKey(@"mention"), @"Mention");
 
+        /// <summary>
+        /// "This beatmap is not available."
+        /// </summary>
+        public static LocalisableString BeatmapNotAvailable => new TranslatableString(getKey(@"beatmap_not_available"), @"This beatmap is not available.");
+
         private static string getKey(string key) => $@"{prefix}:{key}";
     }
 }

@@ -157,7 +157,7 @@ namespace osu.Desktop
                 return true;
             }
 
-            if ((args.Length == 2 && (args[0] == "set-ruleset" || args[0] == "set-guest"))
+            if ((args.Length == 2 && (args[0] == "set-ruleset" || args[0] == "set-guest" || args[0] == "select-beatmap"))
              || (args.Length == 3 && args[0] == "set-setting"))
             {
                 var commandHandler = new CommandIPCChannel(host);
