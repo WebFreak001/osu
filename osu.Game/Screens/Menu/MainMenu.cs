@@ -331,7 +331,7 @@ namespace osu.Game.Screens.Menu
 
             if (!api.IsLoggedIn || api.State.Value == APIState.RequiresSecondFactorAuth)
             {
-                Scheduler.AddDelayed(() => login?.Show(), 500);
+                // Scheduler.AddDelayed(() => login?.Show(), 500);
                 loginDisplayed.Value = true;
             }
         }
