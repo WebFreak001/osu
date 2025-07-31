@@ -87,11 +87,17 @@ namespace osu.Game.Input.Bindings
         private static IEnumerable<KeyBinding> globalKeyBindings => new[]
         {
             new KeyBinding(InputKey.Up, GlobalAction.SelectPrevious),
+            new KeyBinding(InputKey.None, GlobalAction.SelectPrevious),
+            new KeyBinding(InputKey.None, GlobalAction.SelectPrevious),
             new KeyBinding(InputKey.Down, GlobalAction.SelectNext),
+            new KeyBinding(InputKey.None, GlobalAction.SelectNext),
+            new KeyBinding(InputKey.None, GlobalAction.SelectNext),
 
-            new KeyBinding(InputKey.Space, GlobalAction.Select),
             new KeyBinding(InputKey.Enter, GlobalAction.Select),
+            new KeyBinding(InputKey.Space, GlobalAction.Select),
             new KeyBinding(InputKey.KeypadEnter, GlobalAction.Select),
+            new KeyBinding(InputKey.None, GlobalAction.Select),
+            new KeyBinding(InputKey.None, GlobalAction.Select),
 
             new KeyBinding(InputKey.Escape, GlobalAction.Back),
             new KeyBinding(InputKey.ExtraMouseButton1, GlobalAction.Back),
