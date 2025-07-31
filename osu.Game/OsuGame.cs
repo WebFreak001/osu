@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Humanizer;
@@ -248,6 +250,8 @@ namespace osu.Game
         private bool tabletLogNotifyOnWarning = true;
         private bool tabletLogNotifyOnError = true;
         private int generalLogRecentCount;
+        private UdpClient udpBroadcasts = new();
+        private const int broadcast_port = 14499;
 
         public OsuGame(string[] args = null)
         {
@@ -255,6 +259,8 @@ namespace osu.Game
 
             Logger.NewEntry += forwardGeneralLogToNotifications;
             Logger.NewEntry += forwardTabletLogToNotifications;
+
+            udpBroadcasts.EnableBroadcast = true;
 
             Schedule(() =>
             {
@@ -457,6 +463,7 @@ namespace osu.Game
             SelectedMods.BindValueChanged(modsChanged);
             Beatmap.BindValueChanged(beatmapChanged, true);
             configUserActivity.BindValueChanged(_ => updateWindowTitle());
+            configUserActivity.BindValueChanged(_ => broadcastUserActivity());
 
             applySafeAreaConsiderations = LocalConfig.GetBindable<bool>(OsuSetting.SafeAreaConsiderations);
             applySafeAreaConsiderations.BindValueChanged(apply => SafeAreaContainer.SafeAreaOverrideEdges = apply.NewValue ? SafeAreaOverrideEdges : Edges.All, true);
@@ -1018,6 +1025,13 @@ namespace osu.Game
 
             if (newTitle != Host.Window.Title)
                 Host.Window.Title = newTitle;
+        }
+
+        private void broadcastUserActivity()
+        {
+            var userActivity = configUserActivity.Value;
+            byte[] msg = MessagePack.MessagePackSerializer.Serialize(typeof(UserActivity), userActivity, SignalRUnionWorkaroundResolver.OPTIONS);
+            udpBroadcasts.Send(msg, msg.Length, new IPEndPoint(0xFFFFFF7F, broadcast_port)); // 127.255.255.255
         }
 
         private void modsChanged(ValueChangedEvent<IReadOnlyList<Mod>> mods)
