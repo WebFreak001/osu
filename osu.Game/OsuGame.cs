@@ -631,7 +631,10 @@ namespace osu.Game
 
         public void SetGuest(string name) => waitForReady(() => beatmapListing, _ =>
         {
-            API.SetGuestUser(name);
+            if (name == null || name == "")
+                API.Logout();
+            else
+                API.SetGuestUser(name);
         });
 
         public void SetSetting<T>(OsuSetting setting, T value) => Schedule(() =>
