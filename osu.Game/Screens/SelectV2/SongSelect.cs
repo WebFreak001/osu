@@ -700,6 +700,9 @@ namespace osu.Game.Screens.SelectV2
             this.FadeOut(fade_duration, Easing.OutQuint);
             onLeavingScreen();
 
+            if (e.Destination is MainMenu)
+                game?.SetGuest(null);
+
             inactivityCountdown.Reset();
 
             return base.OnExiting(e);
