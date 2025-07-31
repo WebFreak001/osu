@@ -160,7 +160,7 @@ namespace osu.Game.Screens.Play
                 return;
 
             float timeBoxTargetWidth = (float)Math.Max(0, remainingTimeForCurrentPeriod - timingPoint.BeatLength / currentPeriod.Value.Value.Duration);
-            remainingTimeBox.ResizeWidthTo(timeBoxTargetWidth, timingPoint.BeatLength * 3.5, Easing.OutQuint);
+            remainingTimeBox.ResizeWidthTo(timeBoxTargetWidth, timingPoint.BeatLength * 3.5, Easing.OutElasticHalf);
         }
 
         private void updateDisplay(ValueChangedEvent<Period?> period)
@@ -179,7 +179,7 @@ namespace osu.Game.Screens.Play
                 breakArrows.Show(BREAK_FADE_DURATION);
 
                 remainingTimeAdjustmentBox
-                    .ResizeWidthTo(remaining_time_container_max_size, BREAK_FADE_DURATION, Easing.OutQuint)
+                    .ResizeWidthTo(remaining_time_container_max_size, BREAK_FADE_DURATION, Easing.OutElasticHalf)
                     .Delay(b.Duration - BREAK_FADE_DURATION)
                     .ResizeWidthTo(0);
 
