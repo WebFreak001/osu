@@ -192,8 +192,8 @@ namespace osu.Game.Screens.SelectV2
         {
             base.LoadComplete();
 
-            config.BindWith(OsuSetting.DisplayStarsMinimum, difficultyRangeSlider.LowerBound);
-            config.BindWith(OsuSetting.DisplayStarsMaximum, difficultyRangeSlider.UpperBound);
+            difficultyRangeSlider.LowerBound = config.GetBindable<double>(OsuSetting.DisplayStarsMinimum);
+            difficultyRangeSlider.UpperBound = config.GetBindable<double>(OsuSetting.DisplayStarsMaximum);
             config.BindWith(OsuSetting.ShowConvertedBeatmaps, showConvertedBeatmapsButton.Active);
             config.BindWith(OsuSetting.SongSelectSortingMode, sortDropdown.Current);
             config.BindWith(OsuSetting.SongSelectGroupMode, groupDropdown.Current);
