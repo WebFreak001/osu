@@ -42,6 +42,7 @@ using osu.Game.Online.API;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Overlays;
 using osu.Game.Overlays.Mods;
+using osu.Game.Overlays.OSD;
 using osu.Game.Overlays.Volume;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Scoring;
@@ -120,6 +121,8 @@ namespace osu.Game.Screens.SelectV2
 
         private NoResultsPlaceholder noResultsPlaceholder = null!;
 
+        private InactivityCountdown inactivityCountdown = null!;
+
         public override bool? ApplyModTrackAdjustments => true;
 
         public override bool ShowFooter => true;
@@ -127,7 +130,7 @@ namespace osu.Game.Screens.SelectV2
         private Sample? errorSample;
 
         [Resolved]
-        private OsuGameBase? game { get; set; }
+        private OsuGame? game { get; set; }
 
         [Resolved]
         private OsuLogo? logo { get; set; }
@@ -279,6 +282,20 @@ namespace osu.Game.Screens.SelectV2
                                             },
                                         },
                                     }
+                                },
+                                inactivityCountdown = new InactivityCountdown()
+                                {
+                                    Anchor = Anchor.BottomLeft,
+                                    Origin = Anchor.BottomLeft,
+                                    RelativePositionAxes = Axes.Both,
+                                    Position = new Vector2(0.02f, -0.02f),
+                                    TimeoutElapsed = () => {
+                                        if (!this.IsCurrentScreen())
+                                            return;
+
+                                        game?.SetGuest(null);
+                                        this.Exit();
+                                    },
                                 },
                             }
                         },
@@ -640,6 +657,8 @@ namespace osu.Game.Screens.SelectV2
         {
             base.OnEntering(e);
 
+            inactivityCountdown.Reset();
+
             this.FadeIn();
             onArrivingAtScreen();
         }
@@ -647,6 +666,8 @@ namespace osu.Game.Screens.SelectV2
         public override void OnResuming(ScreenTransitionEvent e)
         {
             base.OnResuming(e);
+
+            inactivityCountdown.Reset();
 
             this.FadeIn(fade_duration, Easing.OutQuint);
             onArrivingAtScreen();
@@ -678,6 +699,8 @@ namespace osu.Game.Screens.SelectV2
         {
             this.FadeOut(fade_duration, Easing.OutQuint);
             onLeavingScreen();
+
+            inactivityCountdown.Reset();
 
             return base.OnExiting(e);
         }
