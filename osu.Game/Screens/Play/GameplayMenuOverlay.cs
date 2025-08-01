@@ -22,6 +22,7 @@ using osu.Game.Input.Bindings;
 using osuTK;
 using osuTK.Graphics;
 using osu.Game.Localisation;
+using osu.Game.Overlays.OSD;
 
 namespace osu.Game.Screens.Play
 {
@@ -64,6 +65,8 @@ namespace osu.Game.Screens.Play
         public IReadOnlyList<DialogButton> Buttons => InternalButtons;
 
         private TextFlowContainer playInfoText = null!;
+
+        private InactivityCountdown inactivityCountdown = null!;
 
         [Resolved]
         private GlobalActionContainer globalAction { get; set; } = null!;
@@ -126,6 +129,16 @@ namespace osu.Game.Screens.Play
                         }
                     }
                 },
+                inactivityCountdown = new InactivityCountdown(numSeconds: 20)
+                {
+                    Anchor = Anchor.TopCentre,
+                    Origin = Anchor.TopCentre,
+                    Position = new Vector2(0, 0.1f),
+                    TimeoutElapsed = () => {
+                        if (State.Value == Visibility.Visible)
+                            BackAction();
+                    }
+                },
             };
 
             if (OnResume != null)
@@ -161,6 +174,7 @@ namespace osu.Game.Screens.Play
         protected override void PopIn()
         {
             this.FadeIn(TRANSITION_DURATION, Easing.In);
+            inactivityCountdown.Reset();
             updateInfoText();
         }
 

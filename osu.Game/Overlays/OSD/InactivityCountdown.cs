@@ -24,7 +24,7 @@ namespace osu.Game.Overlays.OSD
             Anchor = Anchor.BottomLeft;
             Origin = Anchor.BottomLeft;
             RelativePositionAxes = Axes.Both;
-            Position = new Vector2(0.02f, -0.02f);
+            Position = new Vector2(0.02f, -0.1f);
             Text = numSeconds.ToString();
             Font = OsuFont.GetFont(Typeface.Torus, size: 100, fixedWidth: true);
         }
