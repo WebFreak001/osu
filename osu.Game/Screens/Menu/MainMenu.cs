@@ -118,8 +118,11 @@ namespace osu.Game.Screens.Menu
         [CanBeNull]
         private IDisposable logoProxy;
 
+        [CanBeNull]
+        private KiaiMenuFountains fountains;
+
         [BackgroundDependencyLoader(true)]
-        private void load(BeatmapListingOverlay beatmapListing, SettingsOverlay settings, OsuConfigManager config, SessionStatics statics, AudioManager audio)
+        private void load(BeatmapListingOverlay beatmapListing, SettingsOverlay settings, OsuConfigManager config, SessionStatics statics, AudioManager audio, IAPIProvider api)
         {
             holdDelay = config.GetBindable<double>(OsuSetting.UIHoldActivationDelay);
             loginDisplayed = statics.GetBindable<bool>(Static.LoginOverlayDisplayed);
@@ -184,8 +187,7 @@ namespace osu.Game.Screens.Menu
                     Origin = Anchor.TopRight,
                     Margin = new MarginPadding { Right = 15, Top = 5 }
                 },
-                // For now, this is too much alongside the seasonal lighting.
-                SeasonalUIConfig.ENABLED ? Empty() : new KiaiMenuFountains(),
+                fountains = new KiaiMenuFountains(),
                 bottomElementsFlow = new FillFlowContainer
                 {
                     AutoSizeAxes = Axes.Both,
@@ -239,6 +241,8 @@ namespace osu.Game.Screens.Menu
             Buttons.OnBeatmapListing = () => beatmapListing?.ToggleVisibility();
 
             reappearSampleSwoosh = audio.Samples.Get(@"Menu/reappear-swoosh");
+
+            api.LocalUser.BindValueChanged((v) => fountains?.Shoot());
         }
 
         protected override void LoadComplete()
