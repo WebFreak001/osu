@@ -26,6 +26,7 @@ using osu.Game.Input.Bindings;
 using osu.Game.Localisation;
 using osu.Game.Online.Placeholders;
 using osu.Game.Overlays;
+using osu.Game.Overlays.OSD;
 using osu.Game.Overlays.Volume;
 using osu.Game.Scoring;
 using osu.Game.Screens.Play;
@@ -85,6 +86,7 @@ namespace osu.Game.Screens.Ranking
         public bool IsLocalPlay { get; init; }
 
         private Sample? popInSample;
+        private InactivityCountdown inactivityCountdown = null!;
 
         [Cached]
         private OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
@@ -106,76 +108,85 @@ namespace osu.Game.Screens.Ranking
             InternalChild = new PopoverContainer
             {
                 RelativeSizeAxes = Axes.Both,
-                Child = new GridContainer
+                Child = new Container()
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Content = new[]
-                    {
-                        new Drawable[]
+                    Width = 1,
+                    Height = 1,
+                    Children = [
+                        new GridContainer
                         {
-                            VerticalScrollContent = new VerticalScrollContainer
+                            RelativeSizeAxes = Axes.Both,
+                            Content = new[]
                             {
-                                RelativeSizeAxes = Axes.Both,
-                                ScrollbarVisible = false,
-                                Child = new Container
+                                new Drawable[]
                                 {
-                                    RelativeSizeAxes = Axes.Both,
-                                    Children = new Drawable[]
+                                    VerticalScrollContent = new VerticalScrollContainer
                                     {
-                                        new GlobalScrollAdjustsVolume(),
-                                        StatisticsPanel = new StatisticsPanel
+                                        RelativeSizeAxes = Axes.Both,
+                                        ScrollbarVisible = false,
+                                        Child = new Container
                                         {
                                             RelativeSizeAxes = Axes.Both,
-                                            Score = { BindTarget = SelectedScore },
-                                            AchievedScore = IsLocalPlay && Score != null ? Score : null,
-                                        },
-                                        ScorePanelList = new ScorePanelList
+                                            Children = new Drawable[]
+                                            {
+                                                new GlobalScrollAdjustsVolume(),
+                                                StatisticsPanel = new StatisticsPanel
+                                                {
+                                                    RelativeSizeAxes = Axes.Both,
+                                                    Score = { BindTarget = SelectedScore },
+                                                    AchievedScore = IsLocalPlay && Score != null ? Score : null,
+                                                },
+                                                ScorePanelList = new ScorePanelList
+                                                {
+                                                    RelativeSizeAxes = Axes.Both,
+                                                    SelectedScore = { BindTarget = SelectedScore },
+                                                    PostExpandAction = () => StatisticsPanel.ToggleVisibility()
+                                                },
+                                                detachedPanelContainer = new Container<ScorePanel>
+                                                {
+                                                    RelativeSizeAxes = Axes.Both
+                                                },
+                                            }
+                                        }
+                                    },
+                                },
+                                new[]
+                                {
+                                    bottomPanel = new Container
+                                    {
+                                        Anchor = Anchor.BottomLeft,
+                                        Origin = Anchor.BottomLeft,
+                                        RelativeSizeAxes = Axes.X,
+                                        Height = TwoLayerButton.SIZE_EXTENDED.Y,
+                                        Alpha = 0,
+                                        Children = new Drawable[]
                                         {
-                                            RelativeSizeAxes = Axes.Both,
-                                            SelectedScore = { BindTarget = SelectedScore },
-                                            PostExpandAction = () => StatisticsPanel.ToggleVisibility()
-                                        },
-                                        detachedPanelContainer = new Container<ScorePanel>
-                                        {
-                                            RelativeSizeAxes = Axes.Both
-                                        },
+                                            new Box
+                                            {
+                                                RelativeSizeAxes = Axes.Both,
+                                                Colour = Color4Extensions.FromHex("#333")
+                                            },
+                                            buttons = new FillFlowContainer
+                                            {
+                                                Anchor = Anchor.Centre,
+                                                Origin = Anchor.Centre,
+                                                AutoSizeAxes = Axes.Both,
+                                                Spacing = new Vector2(5),
+                                                Direction = FillDirection.Horizontal
+                                            },
+                                        }
                                     }
                                 }
                             },
-                        },
-                        new[]
-                        {
-                            bottomPanel = new Container
+                            RowDimensions = new[]
                             {
-                                Anchor = Anchor.BottomLeft,
-                                Origin = Anchor.BottomLeft,
-                                RelativeSizeAxes = Axes.X,
-                                Height = TwoLayerButton.SIZE_EXTENDED.Y,
-                                Alpha = 0,
-                                Children = new Drawable[]
-                                {
-                                    new Box
-                                    {
-                                        RelativeSizeAxes = Axes.Both,
-                                        Colour = Color4Extensions.FromHex("#333")
-                                    },
-                                    buttons = new FillFlowContainer
-                                    {
-                                        Anchor = Anchor.Centre,
-                                        Origin = Anchor.Centre,
-                                        AutoSizeAxes = Axes.Both,
-                                        Spacing = new Vector2(5),
-                                        Direction = FillDirection.Horizontal
-                                    },
-                                }
+                                new Dimension(),
+                                new Dimension(GridSizeMode.AutoSize)
                             }
-                        }
-                    },
-                    RowDimensions = new[]
-                    {
-                        new Dimension(),
-                        new Dimension(GridSizeMode.AutoSize)
-                    }
+                        },
+                        inactivityCountdown = new InactivityCountdown(this, 20),
+                    ]
                 }
             };
 
@@ -395,6 +406,8 @@ namespace osu.Game.Screens.Ranking
         public override void OnEntering(ScreenTransitionEvent e)
         {
             base.OnEntering(e);
+
+            inactivityCountdown.Reset();
 
             ApplyToBackground(b =>
             {

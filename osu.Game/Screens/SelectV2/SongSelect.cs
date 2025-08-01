@@ -265,7 +265,10 @@ namespace osu.Game.Screens.SelectV2
                                         },
                                     }
                                 },
-                                inactivityCountdown = new InactivityCountdown(this),
+                                inactivityCountdown = new InactivityCountdown(this)
+                                {
+                                    Position = new Vector2(0.02f, -0.02f)
+                                },
                             }
                         },
                     }
