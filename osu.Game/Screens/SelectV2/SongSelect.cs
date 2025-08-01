@@ -283,20 +283,7 @@ namespace osu.Game.Screens.SelectV2
                                         },
                                     }
                                 },
-                                inactivityCountdown = new InactivityCountdown()
-                                {
-                                    Anchor = Anchor.BottomLeft,
-                                    Origin = Anchor.BottomLeft,
-                                    RelativePositionAxes = Axes.Both,
-                                    Position = new Vector2(0.02f, -0.02f),
-                                    TimeoutElapsed = () => {
-                                        if (!this.IsCurrentScreen())
-                                            return;
-
-                                        game?.SetGuest(null);
-                                        this.Exit();
-                                    },
-                                },
+                                inactivityCountdown = new InactivityCountdown(this),
                             }
                         },
                     }
